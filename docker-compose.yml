@@ -1,0 +1,55 @@
+version: '3.6'
+services:
+
+### NGINX Server #########################################
+    projector_nginx:
+      container_name: projector_nginx
+      build:
+        context: .
+        dockerfile: nginx/Dockerfile
+      volumes:
+          - ./templates:/etc/nginx/templates
+          - ./nginx/projector_hw6.conf:/etc/nginx/conf.d/projector_hw6.conf
+          - ./nginx_cache:/etc/nginx_cache
+#          - ./nginx_log:/var/log/nginx/
+      ports:
+        - "8080:80"
+      environment:
+        - NGINX_HOST=projector.localhost
+        - NGINX_PORT=80
+
+      links:
+        - projector_service
+      networks:
+        - default
+      depends_on:
+        - projector_service
+
+    projector_service:
+      container_name: projector_service
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+        - "0.0.0.0:4888:4888"
+      volumes:
+        - .:/app/
+
+      environment:
+        ENV_NAME: local
+        # app settings
+        APP_HOST: 0.0.0.0
+        APP_PORT: 4888
+        LOG_LEVEL: DEBUG
+
+#      depends_on:
+#        - redis
+#        - db_postgres
+      networks:
+        - default
+
+volumes:
+  db-data:
+  redis-data:
+  influxdb_data:
+  grafana_data:
