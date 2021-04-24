@@ -1,0 +1,1 @@
+add purge implementation https://crates.io/crates/nginx-cache-purge
